@@ -46,7 +46,12 @@
         <button id="stop" disabled>Cancel call</button>
       </div>
       <p id="startMsg"></p>
-      <p class="muted consent">Open <b>/call</b> on the phone and tap “Set up this phone”. The person has agreed in advance to practice calls; stop if a call upsets them.</p>
+      <div class="phone-link">
+        <label for="phoneLink">Open this link on the phone</label>
+        <div class="phone-row"><input id="phoneLink" readonly><button id="copyPhone">Copy phone link</button></div>
+        <p id="phoneHint" class="muted"></p>
+      </div>
+      <p class="muted consent">Then tap “Set up this phone”. The person has agreed in advance to practice calls; stop if a call upsets them.</p>
     </section>
 
     <section class="card live">
@@ -100,10 +105,26 @@ async function init() {
   $('language').addEventListener('change', fillRailLibrary);
   Teeka.nav();
   Teeka.helpCard($('railHelp'));
+  setUpPhoneLink();
   $('start').onclick = startDrill;
   $('stop').onclick = async () => { await api('/api/drills/stop', { method: 'POST' }); refresh(); };
   refresh();
   setInterval(refresh, 700);
+}
+
+// The address a phone should open. A laptop's own address can't be reached from a phone.
+function setUpPhoneLink() {
+  const local = ['localhost', '127.0.0.1', '[::1]'].includes(location.hostname);
+  $('phoneLink').value = location.origin + '/call';
+  $('copyPhone').hidden = local;
+  $('phoneHint').textContent = local ? 'This address only works on this computer. On a phone, use your HTTPS tunnel or hosted link, ending in /call.' : '';
+  $('copyPhone').onclick = async () => {
+    let copied = false;
+    try { await navigator.clipboard.writeText($('phoneLink').value); copied = true; }
+    catch (e) { $('phoneLink').select(); try { copied = document.execCommand('copy'); } catch (err) {} }
+    $('phoneHint').textContent = copied ? 'Copied. Send it to the phone, for example on WhatsApp.' : 'Could not copy. Please select the link above and copy it.';
+    if (copied) { $('copyPhone').textContent = 'Copied'; setTimeout(() => { $('copyPhone').textContent = 'Copy phone link'; }, 2000); }
+  };
 }
 
 function fillScams() {

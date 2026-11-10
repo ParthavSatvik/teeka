@@ -318,6 +318,13 @@ button.primary { padding: 12px 28px; }
 #startDose:disabled { background: transparent; border-color: var(--rule); color: var(--muted); box-shadow: none; }
 .grid:has(#startDose) #start:not(:disabled) { background: transparent; color: var(--accent); font-weight: 500; box-shadow: none; }
 
+.phone-link { margin-top: 16px; }
+.phone-row { display: flex; flex-wrap: wrap; gap: 10px; }
+.phone-row input { flex: 1 1 240px; min-width: 0; }
+.phone-row button { flex: none; min-height: 44px; }
+#phoneHint { margin: 6px 0 0; }
+#phoneHint:empty { display: none; }
+
 /* ---- live call states ---- */
 .live { position: relative; transition: background-color .35s ease; }
 .live::before { content: ""; position: absolute; inset: 0 0 auto; height: 5px; background: transparent; transition: background-color .35s ease; }
