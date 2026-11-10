@@ -8,6 +8,8 @@
 
 Built entirely on Gnani AI's Indian speech models for the [Great Indian AI Internship Challenge](https://gnani.ai/internship).
 
+**[Read the one-page pitch](PITCH.pdf)**
+
 `Gnani Prisma` · `Gnani Timbre` · `Gnani voice cloning (optional)` · `15 scam types` · `Built for 10 Indian languages`
 
 *Role-played demo. All names, numbers and organisations are fictional.*
