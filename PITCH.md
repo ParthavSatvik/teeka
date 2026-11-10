@@ -2,6 +2,9 @@
 
 **Practice scam calls for parents and grandparents, in their own language, that stop and teach the moment they start to fall for one.**
 
+**Team:** Satvik Pandey (Team Leader) and Malhar Srivatsav
+**College:** Manipal Institute of Technology, Bengaluru
+
 ## The problem
 
 India registered 21,900+ digital-arrest complaints involving ₹647 crore+ from January to August 2026 (I4C and MHA status report to the Supreme Court, reported October 2026). Older people are among the easiest targets. Spam apps only flag known numbers, posters only tell people what to do, and bank checks act after the person is already convinced. Nobody practises saying no under pressure.
