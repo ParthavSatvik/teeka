@@ -10,6 +10,9 @@ transcript, and results.json holds outcomes only.
 from __future__ import annotations
 
 import asyncio
+import hashlib
+import hmac
+import html
 import json
 import os
 import csv
@@ -20,10 +23,11 @@ import uuid
 from dataclasses import dataclass, field
 from datetime import datetime, timedelta
 from pathlib import Path
+from urllib.parse import quote
 
 from dotenv import load_dotenv
-from fastapi import FastAPI, HTTPException, WebSocket
-from fastapi.responses import FileResponse, RedirectResponse, Response
+from fastapi import FastAPI, Form, HTTPException, Request, WebSocket
+from fastapi.responses import FileResponse, HTMLResponse, JSONResponse, RedirectResponse, Response
 import re
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
@@ -677,6 +681,71 @@ engine = Engine(load_settings(), ROOT / "results.json")
 app = FastAPI(title="Teeka")
 app.mount("/static", StaticFiles(directory=ROOT / "static"), name="static")
 
+# ---- access code: anyone who can open a hosted copy could otherwise spend the Gnani credits
+ACCESS_COOKIE = "teeka_access"
+ACCESS_PAGE = """<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Teeka</title>
+<style>body{margin:0;min-height:100vh;display:grid;place-items:center;background:#e9dfc9;color:#22302b;font:19px/1.5 system-ui,sans-serif;padding:16px;box-sizing:border-box}
+form{width:100%;max-width:380px;background:#fbf6e9;border:1px solid #d8cbae;border-radius:8px;padding:28px;box-sizing:border-box}h1{margin:0 0 6px;color:#0f5c4d;font:400 2.1rem Georgia,serif}p{margin:0 0 16px}
+input,button{width:100%;box-sizing:border-box;min-height:50px;font:inherit;border-radius:6px;padding:10px 14px}input{border:1px solid #8f8467;background:#fffdf6;margin-bottom:12px}button{border:0;background:#0f5c4d;color:#fbf6e9;font-weight:700;cursor:pointer}.e{color:#a92e1c;font-weight:600}</style></head>
+<body><form method="post" action="/access"><h1>Teeka</h1><p>Enter the access code to continue.</p>__ERROR__<input type="hidden" name="next" value="__NEXT__"><input name="code" type="password" aria-label="Access code" autofocus required><button>Continue</button></form></body></html>"""
+
+
+def access_code() -> str:
+    return os.environ.get("ACCESS_CODE", "").strip()
+
+
+def access_token(code: str) -> str:
+    return hmac.new(code.encode("utf-8"), b"teeka-access", hashlib.sha256).hexdigest()
+
+
+def has_access(cookies) -> bool:
+    code = access_code()
+    return not code or hmac.compare_digest(cookies.get(ACCESS_COOKIE, ""), access_token(code))
+
+
+def safe_next(path: str) -> str:
+    return path if path.startswith("/") and not path.startswith(("//", "/\\")) else "/dashboard"
+
+
+def access_page(next_path: str, error: str = "", status: int = 200) -> HTMLResponse:
+    body = ACCESS_PAGE.replace("__NEXT__", html.escape(safe_next(next_path), quote=True)).replace("__ERROR__", f'<p class="e">{html.escape(error)}</p>' if error else "")
+    return HTMLResponse(body, status_code=status)
+
+
+def hosted_without_code() -> bool:
+    """On Render with no code set, stay shut rather than open the credits to everyone."""
+    return bool(os.environ.get("RENDER")) and not access_code()
+
+
+@app.middleware("http")
+async def require_access(request: Request, call_next):
+    if hosted_without_code():
+        return Response("Set ACCESS_CODE in the host's environment settings, then redeploy.", status_code=503, media_type="text/plain")
+    path = request.url.path
+    if path == "/access" or has_access(request.cookies):
+        return await call_next(request)
+    if path.startswith("/api/"):
+        return JSONResponse({"detail": "Access code needed."}, status_code=401)
+    return RedirectResponse("/access?next=" + quote(path), status_code=303)
+
+
+@app.get("/access")
+async def access_form(next: str = "/dashboard"):
+    return access_page(next)
+
+
+@app.post("/access")
+async def access_submit(request: Request, code: str = Form(""), next: str = Form("/dashboard")):
+    expected = access_code()
+    if expected and not hmac.compare_digest(code.strip().encode("utf-8"), expected.encode("utf-8")):
+        await asyncio.sleep(0.5)  # slows guessing
+        return access_page(next, "That code is not right. Try again.", 401)
+    resp = RedirectResponse(safe_next(next), status_code=303)
+    if expected:
+        secure = request.headers.get("x-forwarded-proto", request.url.scheme) == "https"
+        resp.set_cookie(ACCESS_COOKIE, access_token(expected), max_age=7 * 86400, httponly=True, samesite="lax", secure=secure)
+    return resp
+
 
 class PersonBody(BaseModel):
     name: str
@@ -837,6 +906,9 @@ async def stop_drill():
 
 @app.websocket("/ws/call")
 async def ws_call(ws: WebSocket):
+    if hosted_without_code() or not has_access(ws.cookies):
+        await ws.close(code=1008)
+        return
     await ws.accept()
     await engine.attach_phone(ws)
     try:

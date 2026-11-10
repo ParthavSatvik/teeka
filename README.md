@@ -198,12 +198,15 @@ Open `http://localhost:8000/dashboard`. With no API key it runs in **mock mode**
 cloudflared tunnel --url http://localhost:8000
 ```
 
+**Host it online:** [Deploy to Render](https://render.com/deploy?repo=https://github.com/ParthavSatvik/teeka) and enter your `GNANI_API_KEY` and an `ACCESS_CODE` when asked. The app runs as one server, one call at a time, and asks every visitor for the code so strangers can't spend your credits. On Render's free plan it sleeps when idle, takes about a minute to wake, and saved results reset when it restarts.
+
 <details>
 <summary><b>Settings</b></summary>
 
 | Setting | Default | Meaning |
 |---|---|---|
 | `GNANI_API_KEY` | empty | Empty means mock mode |
+| `ACCESS_CODE` | empty | Asks visitors for a code. Required on Render |
 | `STT_MODE` | `stream` | `stream` for Prisma realtime, or `rest` for one recorded reply at a time. Stream falls back to REST automatically |
 | `STT_MODEL` | `prisma-v2.5` | Or `prisma-v3.0` |
 | `TTS_MODEL` | `timbre-v2.5` | Or `timbre-v3.0` |

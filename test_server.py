@@ -222,7 +222,43 @@ def test_family_voice_missing_file_falls_back(tmp):
     assert any("Family voice file not found" in n for n in st["notices"])
 
 
-TESTS = [test_settings, test_complying_path, test_refusing_path, test_unsure_escalates_then_wraps,
+def test_access_code(tmp):
+    import os
+    from starlette.websockets import WebSocketDisconnect
+    old = {k: os.environ.pop(k, None) for k in ("ACCESS_CODE", "RENDER")}
+    try:
+        c = fresh(tmp)
+        assert c.get("/api/state").status_code == 200  # no code set: open, as on the laptop
+        os.environ["RENDER"] = "true"
+        assert c.get("/dashboard").status_code == 503  # hosted with no code stays shut
+        del os.environ["RENDER"]
+        os.environ["ACCESS_CODE"] = "fire-drill"
+        assert c.get("/api/state").status_code == 401
+        assert c.get("/static/app.css", follow_redirects=False).status_code == 303
+        r = c.get("/dashboard", follow_redirects=False)
+        assert r.status_code == 303 and r.headers["location"] == "/access?next=/dashboard"
+        try:
+            with c.websocket_connect("/ws/call"):
+                raise AssertionError("socket opened without the code")
+        except WebSocketDisconnect:
+            pass
+        assert c.post("/access", data={"code": "wrong", "next": "/dashboard"}, follow_redirects=False).status_code == 401
+        assert c.get("/api/state").status_code == 401
+        r = c.post("/access", data={"code": "fire-drill", "next": "//evil.example"}, follow_redirects=False)
+        assert r.status_code == 303 and r.headers["location"] == "/dashboard"  # no open redirect
+        assert c.get("/api/state").status_code == 200
+        assert c.get("/dashboard").status_code == 200
+        with c.websocket_connect("/ws/call"):
+            pass
+    finally:
+        os.environ.pop("ACCESS_CODE", None)
+        os.environ.pop("RENDER", None)
+        for k, v in old.items():
+            if v is not None:
+                os.environ[k] = v
+
+
+TESTS = [test_access_code, test_settings, test_complying_path, test_refusing_path, test_unsure_escalates_then_wraps,
          test_compliance_on_last_line_uses_that_lines_lesson, test_hangup_decline_and_unanswered,
          test_busy_and_stop_and_unknown, test_pages, test_embedding_shapes,
          test_family_voice_used_with_code_word, test_family_voice_failure_falls_back_with_notice,

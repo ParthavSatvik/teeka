@@ -1,0 +1,15 @@
+services:
+  - type: web
+    name: teeka
+    runtime: python
+    plan: free
+    numInstances: 1
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn server:app --host 0.0.0.0 --port $PORT
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.12.7
+      - key: GNANI_API_KEY
+        sync: false
+      - key: ACCESS_CODE
+        sync: false
