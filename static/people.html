@@ -29,7 +29,7 @@
     </section>
     <section class="card span2">
       <h2>Family</h2>
-      <div id="list" class="people"></div>
+      <div id="list" class="people"><p class="loading">Loading…</p></div>
     </section>
   </div>
 </div>
@@ -41,7 +41,7 @@ const langName = (code) => (languages.find((l) => l.lang === code) || { name: co
 
 async function draw() {
   const people = await api('/api/people');
-  if (!people.length) { $('list').replaceChildren(el('p', 'muted', 'Nobody added yet. Add the person who will practise.')); return; }
+  if (!people.length) { $('list').replaceChildren(el('p', 'empty-note', 'Nobody added yet. Add the person who will practise.')); return; }
   $('list').replaceChildren(...people.map((p) => {
     const box = el('article', 'person');
     box.append(el('h3', null, p.name), el('p', 'muted', `${langName(p.lang)} · ${p.doses} dose${p.doses === 1 ? '' : 's'}`));
@@ -67,8 +67,8 @@ async function draw() {
     await post('/api/people', { name: $('pName').value, lang: $('pLang').value, consent: true, code_word_set: false });
     $('pName').value = ''; $('pConsent').checked = false; draw();
   };
-  draw();
-})();
+  await draw();
+})().catch(() => $('list').replaceChildren(el('p', 'alert', 'Could not load this. Check the server is running, then refresh.')));
 </script>
 </body>
 </html>

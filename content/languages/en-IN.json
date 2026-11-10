@@ -13,7 +13,8 @@
   "done": "That was only a practice call. Nothing was real, and you are safe.",
   "cancelled": "The practice call was cancelled.",
   "replayLabel": "Hear it again",
-  "slowLabel": "Slower voice"
+  "slowLabel": "Slower voice",
+  "callerSub": "Mobile · India"
  },
  "red_flags": {
   "unsolicited": "Unexpected call",

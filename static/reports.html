@@ -29,9 +29,9 @@
     <p class="muted small">The certificate holds no name and nothing said on a call.</p>
   </section>
   <div class="page-grid">
-    <section class="card"><h2>Red flags that fooled them</h2><div id="flags"></div></section>
-    <section class="card"><h2>Refused, by dose</h2><div id="byDose" class="good"></div></section>
-    <section class="card"><h2>Pilot cohort</h2><p class="muted small">For a bank or group running drills at scale.</p><div id="cohort"></div></section>
+    <section class="card"><h2>Red flags that fooled them</h2><div id="flags"><p class="loading">Loading…</p></div></section>
+    <section class="card"><h2>Refused, by dose</h2><div id="byDose" class="good"><p class="loading">Loading…</p></div></section>
+    <section class="card"><h2>Pilot cohort</h2><p class="muted small">For a bank or group running drills at scale.</p><div id="cohort"><p class="loading">Loading…</p></div></section>
   </div>
 </div>
 <script src="/static/app.js"></script>
@@ -40,7 +40,7 @@ const { $, el, api, nav, bars, flagRows, certificate } = Teeka;
 let last;
 
 function table(box, heads, rows, empty) {
-  if (!rows.length) { box.replaceChildren(el('p', 'muted', empty)); return; }
+  if (!rows.length) { box.replaceChildren(el('p', 'empty-note', empty)); return; }
   const t = el('table'), head = el('tr');
   heads.forEach((h) => head.append(el('th', null, h)));
   const th = el('thead'); th.append(head); const tb = el('tbody');
@@ -69,8 +69,8 @@ async function draw() {
   if (q && people.some((p) => p.name === q)) $('who').value = q;
   $('who').onchange = draw;
   $('cert').onclick = () => certificate(last);
-  draw();
-})();
+  await draw();
+})().catch(() => $('flags').replaceChildren(el('p', 'alert', 'Could not load this. Check the server is running, then refresh.')));
 </script>
 </body>
 </html>

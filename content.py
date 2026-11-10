@@ -20,7 +20,7 @@ import classifier
 CONTENT_ROOT = Path(__file__).parent / "content"
 
 TEMPLATE_KEYS = {"reveal_intro", "reveal_outro", "praise", "wrap", "code_word", "comfort"}
-PHONE_KEYS = {"ringLabel", "declineLabel", "answerLabel", "endLabel", "endTitle", "done", "cancelled", "replayLabel", "slowLabel"}
+PHONE_KEYS = {"ringLabel", "declineLabel", "answerLabel", "endLabel", "endTitle", "done", "cancelled", "replayLabel", "slowLabel", "callerSub"}
 CUES = ("repeat", "wants_time", "asks_what", "confused")
 INTENTS = classifier.INTENTS
 FACT_KEYS = {"where_message": "where", "how_to_pay": "pay", "how_long": "deadline", "why_needed": "reason", "how_much": "money"}

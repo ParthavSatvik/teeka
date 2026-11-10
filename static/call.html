@@ -38,6 +38,9 @@
   .name { font-size: clamp(2.3rem, 11vw, 3rem); overflow-wrap: anywhere; }
   .avatar { position: relative; width: 132px; height: 132px; margin: auto 0; flex: none; border-radius: 50%; display: grid; place-items: center; background: var(--surface); color: var(--soft); }
   .avatar svg { width: 76px; height: 76px; }
+  .avatar b { display: none; font-size: 3.8rem; font-weight: 500; color: #fff; line-height: 1; }
+  .avatar.letter b { display: block; }
+  .avatar.letter svg { display: none; }
   .ring .avatar::before, .ring .avatar::after { content: ""; position: absolute; inset: 0; border-radius: 50%; border: 2px solid var(--mint); animation: ripple 2s ease-out infinite; }
   .ring .avatar::after { animation-delay: 1s; }
   @keyframes ripple { from { transform: scale(1); opacity: .7; } to { transform: scale(1.55); opacity: 0; } }
@@ -77,6 +80,12 @@
   }
   /* the typed box is only for mock mode, so make room for it on short screens */
   @media (max-height: 720px) { #incall:has(#mock.on) .avatar { display: none; } }
+  /* on a computer, show the call inside a phone on the desk; phones are untouched */
+  @media (min-width: 700px) {
+    html, body { min-height: 100%; background: #e9dfc9 url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200' viewBox='0 0 200 200' %3E%3Cg transform='translate(100 100)' fill='none' stroke='%23d3c29a' stroke-width='1.4' stroke-linecap='round'%3E%3Cpath transform='rotate(0)' d='M0 0C17.4 -15.1 17.4 -38.3 0 -52.2C-17.4 -38.3 -17.4 -15.1 0 0Z'/%3E%3Cpath transform='rotate(45)' d='M0 0C17.4 -15.1 17.4 -38.3 0 -52.2C-17.4 -38.3 -17.4 -15.1 0 0Z'/%3E%3Cpath transform='rotate(90)' d='M0 0C17.4 -15.1 17.4 -38.3 0 -52.2C-17.4 -38.3 -17.4 -15.1 0 0Z'/%3E%3Cpath transform='rotate(135)' d='M0 0C17.4 -15.1 17.4 -38.3 0 -52.2C-17.4 -38.3 -17.4 -15.1 0 0Z'/%3E%3Cpath transform='rotate(180)' d='M0 0C17.4 -15.1 17.4 -38.3 0 -52.2C-17.4 -38.3 -17.4 -15.1 0 0Z'/%3E%3Cpath transform='rotate(225)' d='M0 0C17.4 -15.1 17.4 -38.3 0 -52.2C-17.4 -38.3 -17.4 -15.1 0 0Z'/%3E%3Cpath transform='rotate(270)' d='M0 0C17.4 -15.1 17.4 -38.3 0 -52.2C-17.4 -38.3 -17.4 -15.1 0 0Z'/%3E%3Cpath transform='rotate(315)' d='M0 0C17.4 -15.1 17.4 -38.3 0 -52.2C-17.4 -38.3 -17.4 -15.1 0 0Z'/%3E%3Cpath transform='rotate(22.5)' d='M0 -11.6C8.1 -19.7 8.1 -29 0 -33.6C-8.1 -29 -8.1 -19.7 0 -11.6Z'/%3E%3Cpath transform='rotate(67.5)' d='M0 -11.6C8.1 -19.7 8.1 -29 0 -33.6C-8.1 -29 -8.1 -19.7 0 -11.6Z'/%3E%3Cpath transform='rotate(112.5)' d='M0 -11.6C8.1 -19.7 8.1 -29 0 -33.6C-8.1 -29 -8.1 -19.7 0 -11.6Z'/%3E%3Cpath transform='rotate(157.5)' d='M0 -11.6C8.1 -19.7 8.1 -29 0 -33.6C-8.1 -29 -8.1 -19.7 0 -11.6Z'/%3E%3Cpath transform='rotate(202.5)' d='M0 -11.6C8.1 -19.7 8.1 -29 0 -33.6C-8.1 -29 -8.1 -19.7 0 -11.6Z'/%3E%3Cpath transform='rotate(247.5)' d='M0 -11.6C8.1 -19.7 8.1 -29 0 -33.6C-8.1 -29 -8.1 -19.7 0 -11.6Z'/%3E%3Cpath transform='rotate(292.5)' d='M0 -11.6C8.1 -19.7 8.1 -29 0 -33.6C-8.1 -29 -8.1 -19.7 0 -11.6Z'/%3E%3Cpath transform='rotate(337.5)' d='M0 -11.6C8.1 -19.7 8.1 -29 0 -33.6C-8.1 -29 -8.1 -19.7 0 -11.6Z'/%3E%3Ccircle r='9.9'/%3E%3Ccircle r='58'/%3E%3Cpath d='M58 0A8.1 8.1 0 0 1 56 15'/%3E%3Cpath d='M56 15A8.1 8.1 0 0 1 50.2 29'/%3E%3Cpath d='M50.2 29A8.1 8.1 0 0 1 41 41'/%3E%3Cpath d='M41 41A8.1 8.1 0 0 1 29 50.2'/%3E%3Cpath d='M29 50.2A8.1 8.1 0 0 1 15 56'/%3E%3Cpath d='M15 56A8.1 8.1 0 0 1 0 58'/%3E%3Cpath d='M0 58A8.1 8.1 0 0 1 -15 56'/%3E%3Cpath d='M-15 56A8.1 8.1 0 0 1 -29 50.2'/%3E%3Cpath d='M-29 50.2A8.1 8.1 0 0 1 -41 41'/%3E%3Cpath d='M-41 41A8.1 8.1 0 0 1 -50.2 29'/%3E%3Cpath d='M-50.2 29A8.1 8.1 0 0 1 -56 15'/%3E%3Cpath d='M-56 15A8.1 8.1 0 0 1 -58 0'/%3E%3Cpath d='M-58 0A8.1 8.1 0 0 1 -56 -15'/%3E%3Cpath d='M-56 -15A8.1 8.1 0 0 1 -50.2 -29'/%3E%3Cpath d='M-50.2 -29A8.1 8.1 0 0 1 -41 -41'/%3E%3Cpath d='M-41 -41A8.1 8.1 0 0 1 -29 -50.2'/%3E%3Cpath d='M-29 -50.2A8.1 8.1 0 0 1 -15 -56'/%3E%3Cpath d='M-15 -56A8.1 8.1 0 0 1 -0 -58'/%3E%3Cpath d='M-0 -58A8.1 8.1 0 0 1 15 -56'/%3E%3Cpath d='M15 -56A8.1 8.1 0 0 1 29 -50.2'/%3E%3Cpath d='M29 -50.2A8.1 8.1 0 0 1 41 -41'/%3E%3Cpath d='M41 -41A8.1 8.1 0 0 1 50.2 -29'/%3E%3Cpath d='M50.2 -29A8.1 8.1 0 0 1 56 -15'/%3E%3Cpath d='M56 -15A8.1 8.1 0 0 1 58 -0'/%3E%3Ccircle stroke='none' fill='%23d3c29a' cx='46.4' cy='0' r='1.6'/%3E%3Ccircle stroke='none' fill='%23d3c29a' cx='42.9' cy='17.8' r='1.6'/%3E%3Ccircle stroke='none' fill='%23d3c29a' cx='32.8' cy='32.8' r='1.6'/%3E%3Ccircle stroke='none' fill='%23d3c29a' cx='17.8' cy='42.9' r='1.6'/%3E%3Ccircle stroke='none' fill='%23d3c29a' cx='0' cy='46.4' r='1.6'/%3E%3Ccircle stroke='none' fill='%23d3c29a' cx='-17.8' cy='42.9' r='1.6'/%3E%3Ccircle stroke='none' fill='%23d3c29a' cx='-32.8' cy='32.8' r='1.6'/%3E%3Ccircle stroke='none' fill='%23d3c29a' cx='-42.9' cy='17.8' r='1.6'/%3E%3Ccircle stroke='none' fill='%23d3c29a' cx='-46.4' cy='0' r='1.6'/%3E%3Ccircle stroke='none' fill='%23d3c29a' cx='-42.9' cy='-17.8' r='1.6'/%3E%3Ccircle stroke='none' fill='%23d3c29a' cx='-32.8' cy='-32.8' r='1.6'/%3E%3Ccircle stroke='none' fill='%23d3c29a' cx='-17.8' cy='-42.9' r='1.6'/%3E%3Ccircle stroke='none' fill='%23d3c29a' cx='-0' cy='-46.4' r='1.6'/%3E%3Ccircle stroke='none' fill='%23d3c29a' cx='17.8' cy='-42.9' r='1.6'/%3E%3Ccircle stroke='none' fill='%23d3c29a' cx='32.8' cy='-32.8' r='1.6'/%3E%3Ccircle stroke='none' fill='%23d3c29a' cx='42.9' cy='-17.8' r='1.6'/%3E%3C/g%3E%3Ccircle cx='0' cy='0' r='2.4' fill='%23d3c29a'/%3E%3Ccircle cx='200' cy='0' r='2.4' fill='%23d3c29a'/%3E%3Ccircle cx='0' cy='200' r='2.4' fill='%23d3c29a'/%3E%3Ccircle cx='200' cy='200' r='2.4' fill='%23d3c29a'/%3E%3Ccircle cx='100' cy='0' r='2.4' fill='%23d3c29a'/%3E%3Ccircle cx='0' cy='100' r='2.4' fill='%23d3c29a'/%3E%3Ccircle cx='200' cy='100' r='2.4' fill='%23d3c29a'/%3E%3Ccircle cx='100' cy='200' r='2.4' fill='%23d3c29a'/%3E%3C/svg%3E"); }
+    body { padding: 22px 0; }
+    .screen { width: 410px; max-width: 410px; min-height: min(840px, calc(100vh - 44px)); background: var(--bg); border: 11px solid #131a1d; border-radius: 42px; box-shadow: 0 0 0 1px #4d5b64, 0 22px 50px rgba(70, 52, 20, .35); }
+  }
   @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important; } }
 </style>
 </head>
@@ -103,6 +112,7 @@
       <p class="sub">Waiting for a practice call. Keep this page open.</p>
       <span id="mockTag" class="tag" hidden>Mock mode</span>
       <label class="switch"><input id="phoneSound" type="checkbox"> Phone-line sound</label>
+      <button id="fullBtn" class="ghost" hidden>Full screen</button>
     </div>
   </div>
 
@@ -110,8 +120,9 @@
     <div class="callhead">
       <p class="label" id="ringLabel">Incoming call</p>
       <h1 class="name" id="callerId"></h1>
+      <p class="label" id="callerSub">Mobile · India</p>
     </div>
-    <div class="avatar"><svg aria-hidden="true"><use href="#i-person"/></svg></div>
+    <div class="avatar" data-avatar><b></b><svg aria-hidden="true"><use href="#i-person"/></svg></div>
     <div class="actions">
       <div class="action">
         <button id="declineBtn" class="round red hangup" aria-label="Decline"><svg aria-hidden="true"><use href="#i-phone"/></svg></button>
@@ -130,7 +141,7 @@
       <p id="timer">00:00</p>
     </div>
     <div class="callbody">
-      <div class="avatar"><svg aria-hidden="true"><use href="#i-person"/></svg></div>
+      <div class="avatar" data-avatar><b></b><svg aria-hidden="true"><use href="#i-person"/></svg></div>
       <div id="subtitle"></div>
       <div id="mock">
         <input id="replyText" placeholder="Type what the person says" aria-label="Type what the person says" autocomplete="off">
@@ -193,8 +204,20 @@ function setCallLanguage(labels, lang) {
   $('replayBtn').textContent = labels.replayLabel || $('replayBtn').textContent;
   $('slowBtn').textContent = labels.slowLabel || $('slowBtn').textContent;
   if (lang) document.documentElement.lang = lang;
-  for (const id of ['ringLabel', 'declineLabel', 'answerLabel', 'endLabel', 'endTitle']) $(id).textContent = labels[id];
+  for (const id of ['ringLabel', 'declineLabel', 'answerLabel', 'endLabel', 'endTitle', 'callerSub']) $(id).textContent = labels[id];
   $('endMsg').textContent = labels.done;
+}
+
+// A saved business shows its first letter on a colour, the way a phone's contacts do.
+const AVATAR_COLOURS = ['#3f6fb5', '#2c8378', '#8a5bb0', '#b5603a', '#6d7a24', '#b0476b'];
+function setAvatars(name) {
+  const unknown = /unknown/i.test(name);
+  const hash = [...name].reduce((n, ch) => (n * 31 + ch.charCodeAt(0)) >>> 0, 7);
+  document.querySelectorAll('[data-avatar]').forEach((box) => {
+    box.classList.toggle('letter', !unknown);
+    box.style.background = unknown ? '' : AVATAR_COLOURS[hash % AVATAR_COLOURS.length];
+    box.querySelector('b').textContent = unknown ? '' : name[0].toUpperCase();
+  });
 }
 
 function show(id) { document.querySelectorAll('.screen').forEach((s) => s.classList.toggle('on', s.id === id)); }
@@ -337,6 +360,7 @@ function onMsg(m) {
     cfg = m; $('mockTag').hidden = !m.mock; $('mock').classList.toggle('on', !!m.mock);
   } else if (m.type === 'ring') {
     $('callerId').textContent = $('callerId2').textContent = m.caller_id;
+    setAvatars(m.caller_id);
     resetAudio(); clearTimeout(endedTimer); lesson = []; setCallLanguage(m.labels, m.lang);
     if (audioCtx) audioCtx.resume().catch(() => {});
     show('ringing'); startRing(); err('');
@@ -399,6 +423,10 @@ $('answerBtn').onclick = async () => {
   $('subtitle').textContent = '';
   await startMic();
 };
+// Hides the browser's address bar, and so the tunnel link, where the phone allows it.
+$('fullBtn').hidden = !document.documentElement.requestFullscreen;
+$('fullBtn').onclick = () => document.documentElement.requestFullscreen({ navigationUI: 'hide' }).catch(() => {});
+document.addEventListener('fullscreenchange', () => { $('fullBtn').hidden = !!document.fullscreenElement; });
 $('replayBtn').onclick = playLesson;
 $('slowBtn').onclick = () => { slow = !slow; try { localStorage.setItem('teeka-slow', slow ? '1' : '0'); } catch (e) {} applySpeed(); };
 try { $('phoneSound').checked = localStorage.getItem('teeka-phone-sound') === '1'; } catch (e) {}

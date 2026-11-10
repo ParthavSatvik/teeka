@@ -11,11 +11,6 @@
 <link rel="stylesheet" href="/static/app.css">
 </head>
 <body>
-<div class="stage">
-<aside class="rail" aria-label="Family">
-  <section><h3>People</h3><ul id="railPeople"></ul><p><a href="/people">Manage people</a></p></section>
-  <section><h3>Immunity score</h3><span id="railImmunity" class="immunity-num">–</span><p class="muted small">Share of their last 10 practice calls they refused or hung up on. <a href="/reports">Reports</a></p></section>
-</aside>
 <div class="wrap">
   <header class="top">
     <div class="brand">
@@ -37,6 +32,7 @@
   <div class="grid">
     <section class="card start">
       <h2>Start a practice call</h2>
+      <div id="nextDose"></div>
       <label for="name">Who is practising?</label>
       <input id="name" maxlength="40" placeholder="e.g. Kamla" autocomplete="off">
       <label id="consentRow" class="check" hidden><input id="consent" type="checkbox"> They agreed in advance to occasional practice calls</label>
@@ -55,6 +51,7 @@
 
     <section class="card live">
       <h2>Live call</h2>
+      <ol id="callSteps" class="callsteps" aria-hidden="true"><li>Waiting</li><li>Ringing</li><li>On call</li><li>Finished</li></ol>
       <div id="status" class="muted">No call yet.</div>
       <div id="chips" class="chips"></div>
       <div id="stampBox"></div>
@@ -66,16 +63,9 @@
       <div id="dots" class="dots"></div>
       <p class="legend"><span><i class="p"></i>Protected</span><span><i class="m"></i>Needs another dose</span></p>
       <div id="cardSummary" class="muted"></div>
-      <div id="nextDose"></div>
       <table id="history"><thead><tr><th>Date</th><th>Scam</th><th>Result</th></tr></thead><tbody></tbody></table>
     </section>
   </div>
-</div>
-<aside class="rail" aria-label="Learn">
-  <section><h3>Red flags to work on</h3><div id="railFlags"></div></section>
-  <section><h3>Scam library</h3><ul id="railLibrary"></ul><p><a href="/library">See all</a></p></section>
-  <section id="railHelp"></section>
-</aside>
 </div>
 <script src="/static/app.js"></script>
 
@@ -235,14 +225,8 @@ function renderCard(c) {
 }
 
 function render(st) {
-  const cfg = st.config;
-  const pill = $('modePill');
-  pill.textContent = cfg.mock ? 'Mock mode' : `Live · ${cfg.stt_model} · ${cfg.stt_mode}`;
-  pill.className = 'pill' + (cfg.mock ? ' mock' : '');
+  Teeka.paintMeters(st);
   phoneConnected = st.phone_connected;
-  $('phonePill').textContent = st.phone_connected ? 'Phone: connected' : 'Phone: not connected';
-  $('phonePill').className = 'pill' + (st.phone_connected ? '' : ' off');
-  $('latency').textContent = [st.median_latency_ms != null ? `Prisma ${st.median_latency_ms} ms` : '', st.median_turn_ms != null ? `Reply to voice ${st.median_turn_ms} ms` : ''].filter(Boolean).join(' · ');
   $('consentRow').hidden = !st.consent_required || !$('name').value.trim() || !!(st.person && st.person.consent);
   syncList($('notices'), st.notices, (t) => t, (t) => el('div', 'notice', t));
 
@@ -250,6 +234,10 @@ function render(st) {
   const busy = d && (d.status === 'ringing' || d.status === 'active');
   $('start').disabled = !!busy;
   $('stop').disabled = !busy;
+  if ($('startDose')) $('startDose').disabled = !!busy;
+  const step = d ? { ringing: 1, active: 2, done: 3 }[d.status] : 0;
+  [...$('callSteps').children].forEach((li, i) => { li.className = i < step ? 'past' : i === step ? 'now' : ''; });
+  document.querySelector('.live').dataset.state = d ? d.status : '';
   $('status').dataset.state = d ? d.status : '';
   syncList($('chips'), d ? d.flags : [], (f) => `${d.id}:${f.id}`, (f) => el('span', 'chip', f.en === f.local ? f.en : `${f.en} · ${f.local}`));
   syncList($('stampBox'), d && d.stamp ? [d] : [], (x) => `${x.id}:${x.outcome}`, (x) => {
@@ -276,23 +264,11 @@ function render(st) {
   renderCard(st.card);
 }
 
-async function loadRails(name) {
-  const [people, rep] = await Promise.all([api('/api/people'), api('/api/reports' + (name ? '?name=' + encodeURIComponent(name) : ''))]);
-  $('railPeople').replaceChildren(...(people.length ? people.map((p) => {
-    const li = el('li'), b = el('button', p.name === name ? 'on' : '', p.name);
-    b.onclick = () => { $('name').value = p.name; if (languages.some((l) => l.lang === p.lang)) { $('language').value = p.lang; fillScams(); } refresh(); };
-    li.append(b); return li;
-  }) : [el('li', 'muted', 'Nobody added yet.')]));
-  $('railImmunity').textContent = rep.immunity == null ? '–' : `${rep.immunity}%`;
-  Teeka.bars($('railFlags'), Teeka.flagRows(rep.flags).slice(0, 5), 'Appears after their first practice call.');
+function loadRails(name) {
+  Teeka.loadRails(name, (p) => { $('name').value = p.name; if (languages.some((l) => l.lang === p.lang)) { $('language').value = p.lang; fillScams(); } refresh(); });
 }
 
-function fillRailLibrary() {
-  const lang = $('language').value;
-  $('railLibrary').replaceChildren(...scenarios.filter((s) => s.lang === lang).slice(0, 5).map((s) => {
-    const li = el('li'); li.append(Object.assign(el('a', null, s.title), { href: '/library#' + s.fraud })); return li;
-  }));
-}
+const fillRailLibrary = () => Teeka.scamOfWeek($('language').value);
 
 async function refresh() {
   try { render(await api('/api/state?name=' + encodeURIComponent($('name').value.trim()))); } catch (e) { /* server restarting */ }

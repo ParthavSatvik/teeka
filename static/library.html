@@ -21,7 +21,7 @@
     <div class="titlebar"><h2>Scam library</h2>
       <div class="inline-field"><label for="lang">Language</label><select id="lang"></select></div></div>
     <p class="muted">What each scam sounds like, the red flags, and what to do instead.</p>
-    <div id="items" class="library"></div>
+    <div id="items" class="library"><p class="loading">Loading…</p></div>
   </section>
   <section class="card help-wide" id="help"></section>
 </div>
@@ -53,8 +53,8 @@ async function draw() {
   $('lang').replaceChildren(...languages.map((l) => { const o = el('option', null, l.name === l.native_name ? l.name : `${l.native_name} · ${l.name}`); o.value = l.lang; return o; }));
   try { const s = localStorage.getItem('teeka-lang'); if (languages.some((l) => l.lang === s)) $('lang').value = s; } catch (e) {}
   $('lang').onchange = draw;
-  draw();
-})();
+  await draw();
+})().catch(() => $('items').replaceChildren(el('p', 'alert', 'Could not load this. Check the server is running, then refresh.')));
 </script>
 </body>
 </html>

@@ -4,7 +4,7 @@
  "title": "Buyer sends a QR code",
  "practise": "Scanning a QR code to \"receive\" money",
  "caller_ids": [
-  "Interested Buyer"
+  "Unknown Number"
  ],
  "turn_limit": 8,
  "beats": [
