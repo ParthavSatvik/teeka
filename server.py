@@ -681,7 +681,7 @@ engine = Engine(load_settings(), ROOT / "results.json")
 app = FastAPI(title="Teeka")
 app.mount("/static", StaticFiles(directory=ROOT / "static"), name="static")
 
-# ---- access code: anyone who can open a hosted copy could otherwise spend the Gnani credits
+# ---- optional access code: off unless REQUIRE_ACCESS_CODE=true, so a hosted copy is open by default
 ACCESS_COOKIE = "teeka_access"
 ACCESS_PAGE = """<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Teeka</title>
 <style>body{margin:0;min-height:100vh;display:grid;place-items:center;background:#e9dfc9;color:#22302b;font:19px/1.5 system-ui,sans-serif;padding:16px;box-sizing:border-box}
@@ -690,8 +690,12 @@ input,button{width:100%;box-sizing:border-box;min-height:50px;font:inherit;borde
 <body><form method="post" action="/access"><h1>Teeka</h1><p>Enter the access code to continue.</p>__ERROR__<input type="hidden" name="next" value="__NEXT__"><input name="code" type="password" aria-label="Access code" autofocus required><button>Continue</button></form></body></html>"""
 
 
+def access_required() -> bool:
+    return os.environ.get("REQUIRE_ACCESS_CODE", "").strip().lower() == "true"
+
+
 def access_code() -> str:
-    return os.environ.get("ACCESS_CODE", "").strip()
+    return os.environ.get("ACCESS_CODE", "").strip() if access_required() else ""
 
 
 def access_token(code: str) -> str:
@@ -713,8 +717,8 @@ def access_page(next_path: str, error: str = "", status: int = 200) -> HTMLRespo
 
 
 def hosted_without_code() -> bool:
-    """On Render with no code set, stay shut rather than open the credits to everyone."""
-    return bool(os.environ.get("RENDER")) and not access_code()
+    """If the lock was asked for but no code was set, stay shut instead of silently opening."""
+    return access_required() and not access_code()
 
 
 @app.middleware("http")

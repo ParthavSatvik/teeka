@@ -225,13 +225,15 @@ def test_family_voice_missing_file_falls_back(tmp):
 def test_access_code(tmp):
     import os
     from starlette.websockets import WebSocketDisconnect
-    old = {k: os.environ.pop(k, None) for k in ("ACCESS_CODE", "RENDER")}
+    old = {k: os.environ.pop(k, None) for k in ("ACCESS_CODE", "REQUIRE_ACCESS_CODE")}
     try:
         c = fresh(tmp)
-        assert c.get("/api/state").status_code == 200  # no code set: open, as on the laptop
-        os.environ["RENDER"] = "true"
-        assert c.get("/dashboard").status_code == 503  # hosted with no code stays shut
-        del os.environ["RENDER"]
+        assert c.get("/api/state").status_code == 200  # open by default
+        os.environ["ACCESS_CODE"] = "fire-drill"
+        assert c.get("/dashboard").status_code == 200  # a code alone does not lock it
+        del os.environ["ACCESS_CODE"]
+        os.environ["REQUIRE_ACCESS_CODE"] = "true"
+        assert c.get("/dashboard").status_code == 503  # lock asked for, no code: stays shut
         os.environ["ACCESS_CODE"] = "fire-drill"
         assert c.get("/api/state").status_code == 401
         assert c.get("/static/app.css", follow_redirects=False).status_code == 303
@@ -252,7 +254,7 @@ def test_access_code(tmp):
             pass
     finally:
         os.environ.pop("ACCESS_CODE", None)
-        os.environ.pop("RENDER", None)
+        os.environ.pop("REQUIRE_ACCESS_CODE", None)
         for k, v in old.items():
             if v is not None:
                 os.environ[k] = v

@@ -11,5 +11,3 @@ services:
         value: 3.12.7
       - key: GNANI_API_KEY
         sync: false
-      - key: ACCESS_CODE
-        sync: false
