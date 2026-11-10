@@ -4,8 +4,8 @@
 
 **Team:** Satvik Pandey (Team Leader) and Malhar Srivatsav
 **College:** Manipal Institute of Technology, Bengaluru
-**Satvik Pandey:** Designed and built the full product: backend, voice pipeline, website, phone screen, scam content, testing, deployment and demo.
-**Malhar Srivatsav:** Helped initiate the project.
+**Satvik Pandey:** Led the project and took it to a full product: live voice pipeline, website, phone screen, scam content, testing, deployment and demo.
+**Malhar Srivatsav:** Initiated the project and built its working base.
 
 ## The problem
 
